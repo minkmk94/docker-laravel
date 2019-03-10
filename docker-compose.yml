@@ -1,0 +1,40 @@
+version: "3.4"
+services:
+    mysql:
+        image: mysql:5.7
+        container_name: test-mysql
+        working_dir: /application
+        volumes:
+            - ./../:/application
+        environment:
+            - MYSQL_ROOT_PASSWORD=123456
+            - MYSQL_DATABASE=testdb
+            - MYSQL_USER=testuser
+            - MYSQL_PASSWORD=123456
+        ports:
+            - "3306:3306"
+
+    php:
+        image: vradgr/php71
+        container_name: test-php7
+        links:
+            - mysql
+        ports:
+            - "9000:9000"
+        volumes:
+            - ./../:/application
+            - ./../:/var/www/html
+
+    webserver:
+        image: nginx
+        container_name: test-webserver
+        working_dir: /application
+        links:
+            - php
+        volumes:
+            - ./../:/application
+            - ./../:/var/www/html
+            - ./../storage/logs/nginx/:/var/log/nginx
+            - ./nginx_conf:/etc/nginx/conf.d/
+        ports:
+            - "8080:80"
