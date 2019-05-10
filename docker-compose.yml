@@ -6,10 +6,10 @@ services:
         volumes:
             - db:/var/lib/mysql
         environment:
-            MYSQL_ROOT_PASSWORD: 123456
-            MYSQL_DATABASE: db
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: database
             MYSQL_USER: user
-            MYSQL_PASSWORD: 123456
+            MYSQL_PASSWORD: secret
         ports:
             - "3306:3306"
 
@@ -20,10 +20,14 @@ services:
         container_name: laravel-php7
         links:
             - mysql
+        expose:
+            - "9000"
         ports:
-            - "9000:9000"
+            - "9001:9001"
         volumes:
             - ./../:/var/www/html
+        environment:
+            XDEBUG_CONFIG: remote_host=127.0.0.1
 
     webserver:
         image: nginx
@@ -36,5 +40,6 @@ services:
             - ./nginx_conf:/etc/nginx/conf.d/
         ports:
             - "80:80"
+
 volumes:
     db:
